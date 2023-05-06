@@ -435,6 +435,30 @@ function xtensa-esp32-gcc-toolchain {
   xtensa-esp32-elf-gcc --version
 }
 
+function xtensa-esp32s3-gcc-toolchain {
+  add_path "${tools}"/xtensa-esp32s3-elf/bin
+
+  if [ ! -f "${tools}/xtensa-esp32s3-elf/bin/xtensa-esp32s3-elf-gcc" ]; then
+    cd "${tools}"
+    case ${os} in
+      Darwin)
+        wget --quiet https://github.com/espressif/crosstool-NG/releases/download/esp-12.2.0_20230208/xtensa-esp32s3-elf-12.2.0_20230208-x86_64-apple-darwin.tar.xz
+        xz -d xtensa-esp32s3-elf-12.2.0_20230208-x86_64-apple-darwin.tar.xz
+        tar xf xtensa-esp32s3-elf-12.2.0_20230208-x86_64-apple-darwin.tar
+        rm xtensa-esp32s3-elf-12.2.0_20230208-x86_64-apple-darwin.tar
+        ;;
+      Linux)
+        wget --quiet https://github.com/espressif/crosstool-NG/releases/download/esp-12.2.0_20230208/xtensa-esp32s3-elf-12.2.0_20230208-x86_64-linux-gnu.tar.xz
+        xz -d xtensa-esp32s3-elf-12.2.0_20230208-x86_64-linux-gnu.tar.xz
+        tar xf xtensa-esp32s3-elf-12.2.0_20230208-x86_64-linux-gnu.tar
+        rm xtensa-esp32s3-elf-12.2.0_20230208-x86_64-linux-gnu.tar
+        ;;
+    esac
+  fi
+
+  xtensa-esp32s3-elf-gcc --version
+}
+
 function u-boot-tools {
   if ! type mkimage &> /dev/null; then
     case ${os} in
@@ -523,6 +547,7 @@ function setup_links {
   ln -sf "$(which ccache)" "${tools}"/ccache/bin/x86_64-elf-gcc
   ln -sf "$(which ccache)" "${tools}"/ccache/bin/x86_64-elf-g++
   ln -sf "$(which ccache)" "${tools}"/ccache/bin/xtensa-esp32-elf-gcc
+  ln -sf "$(which ccache)" "${tools}"/ccache/bin/xtensa-esp32s3-elf-gcc
 }
 
 function setup_repos {
@@ -550,7 +575,7 @@ function install_tools {
 
 case ${os} in
   Darwin)
-    install="arm-gcc-toolchain arm64-gcc-toolchain avr-gcc-toolchain binutils bloaty elf-toolchain gen-romfs gperf kconfig-frontends mips-gcc-toolchain python-tools riscv-gcc-toolchain rust xtensa-esp32-gcc-toolchain u-boot-tools wasi-sdk c-cache"
+    install="arm-gcc-toolchain arm64-gcc-toolchain avr-gcc-toolchain binutils bloaty elf-toolchain gen-romfs gperf kconfig-frontends mips-gcc-toolchain python-tools riscv-gcc-toolchain rust xtensa-esp32-gcc-toolchain xtensa-esp32s3-gcc-toolchain u-boot-tools wasi-sdk c-cache"
     mkdir -p "${tools}"/homebrew
     export HOMEBREW_CACHE=${tools}/homebrew
     # https://github.com/apache/arrow/issues/15025
@@ -569,7 +594,7 @@ case ${os} in
     brew update --quiet
     ;;
   Linux)
-    install="arm-clang-toolchain arm-gcc-toolchain arm64-gcc-toolchain avr-gcc-toolchain binutils bloaty clang-tidy gen-romfs gperf kconfig-frontends mips-gcc-toolchain python-tools riscv-gcc-toolchain rust rx-gcc-toolchain sparc-gcc-toolchain xtensa-esp32-gcc-toolchain u-boot-tools wasi-sdk c-cache"
+    install="arm-clang-toolchain arm-gcc-toolchain arm64-gcc-toolchain avr-gcc-toolchain binutils bloaty clang-tidy gen-romfs gperf kconfig-frontends mips-gcc-toolchain python-tools riscv-gcc-toolchain rust rx-gcc-toolchain sparc-gcc-toolchain xtensa-esp32-gcc-toolchain xtensa-esp32s3-gcc-toolchain u-boot-tools wasi-sdk c-cache"
     ;;
 esac
 
